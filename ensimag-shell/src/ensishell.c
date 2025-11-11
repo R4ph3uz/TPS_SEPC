@@ -246,7 +246,9 @@ void execute(char** command,int background,char* inputFileName,char* outputFileN
             pipe(pipe_fd); // on ecrit les files descriptor dans pipe_fd
         }
 
-	child_pid = fork(); // on crée le pid de l'enfant en forkant
+	//https://stackoverflow.com/questions/15102328/how-does-fork-work
+	// montre que le pere reçoit un nombre !=0 et le fils reçoit 0
+	child_pid = fork(); // on crée le pid du parent en forkant
 	if (background)
 	{
 		ajouter_jobs(child_pid,command); // si en bg, ajouter aux jobs en arière plan
@@ -256,7 +258,7 @@ void execute(char** command,int background,char* inputFileName,char* outputFileN
 		perror("Couldn't create the child process.");
 		exit (41);
 	}
-	else if (child_pid == 0){ // le pere reçoit 0
+	else if (child_pid == 0){ // le fils reçoit 0
 		if (currentPipe > 0) {
 			dup2(input_fd, STDIN_FILENO);//on ecrit input file dans STDIN
 			close(input_fd);
